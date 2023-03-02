@@ -1,0 +1,9 @@
+einops
+albumentations
+accelerate
+diffusers
+transformers
+tqdm
+safetensors
+torchvision
+pytorch_lightning
