@@ -865,7 +865,7 @@ def load_checkpoint_with_text_encoder_conversion(ckpt_path):
 
 
 # TODO dtype指定の動作が怪しいので確認する text_encoderを指定形式で作れるか未確認
-def load_models_from_stable_diffusion_checkpoint(v2, ckpt_path, dtype=None):
+def load_models_from_stable_diffusion_checkpoint(v2, ckpt_path, dtype=None, text_model=None):
   _, state_dict = load_checkpoint_with_text_encoder_conversion(ckpt_path)
   if dtype is not None:
     for k, v in state_dict.items():
@@ -916,7 +916,8 @@ def load_models_from_stable_diffusion_checkpoint(v2, ckpt_path, dtype=None):
     info = text_model.load_state_dict(converted_text_encoder_checkpoint)
   else:
     converted_text_encoder_checkpoint = convert_ldm_clip_checkpoint_v1(state_dict)
-    text_model = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
+    if text_model is None:
+      text_model = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
     info = text_model.load_state_dict(converted_text_encoder_checkpoint)
   print("loading text encoder:", info)
 
