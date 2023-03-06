@@ -18,8 +18,8 @@ def svd(args):
   text_encoder_t, _, unet_t = model_util.load_models_from_stable_diffusion_checkpoint(args.v2, args.model_tuned, None, text_encoder_o)
 
   # create LoRA network to extract weights: Use dim (rank) as alpha
-  lora_network_o = lora.create_network(1.0, args.dim, args.dim, None, text_encoder_o, unet_o)
-  lora_network_t = lora.create_network(1.0, args.dim, args.dim, None, text_encoder_t, unet_t)
+  lora_network_o = lora.create_network(1.0, 512, 512, None, text_encoder_o, unet_o)
+  lora_network_t = lora.create_network(1.0, 512, 512, None, text_encoder_t, unet_t)
   assert len(lora_network_o.text_encoder_loras) == len(
       lora_network_t.text_encoder_loras), f"model version is different (SD1.x vs SD2.x) / それぞれのモデルのバージョンが違います（SD1.xベースとSD2.xベース） "
 
