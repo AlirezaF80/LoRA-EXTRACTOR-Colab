@@ -2,13 +2,15 @@
 # The code is based on https://github.com/cloneofsimo/lora/blob/develop/lora_diffusion/cli_svd.py
 # Thanks to cloneofsimo!
 
-import argparse
-import os
-import torch
-from safetensors.torch import load_file, save_file
 from tqdm import tqdm
-import model_util
+import os
+import argparse
+import torch
+import copy
+from transformers import CLIPTextModel
+from safetensors.torch import save_file
 import lora
+import model_util
 
 
 CLAMP_QUANTILE = 0.99
@@ -39,10 +41,12 @@ def svd(args):
 
   save_dtype = str_to_dtype(args.save_precision)
 
+  def_text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
   print(f"loading SD model : {args.model_org}")
-  text_encoder_o, _, unet_o = model_util.load_models_from_stable_diffusion_checkpoint(args.v2, args.model_org)
+  text_encoder_o, _, unet_o = model_util.load_models_from_stable_diffusion_checkpoint(args.v2, args.model_org, None, copy.deepcopy(def_text_encoder))
   print(f"loading SD model : {args.model_tuned}")
-  text_encoder_t, _, unet_t = model_util.load_models_from_stable_diffusion_checkpoint(args.v2, args.model_tuned, None, text_encoder_o)
+  # make a copy of text encoder (type of text encoder is CLIPTextModel)
+  text_encoder_t, _, unet_t = model_util.load_models_from_stable_diffusion_checkpoint(args.v2, args.model_tuned, None, def_text_encoder)
 
   # create LoRA network to extract weights: Use dim (rank) as alpha
   lora_network_o = lora.create_network(1.0, args.dim, args.dim, None, text_encoder_o, unet_o)
