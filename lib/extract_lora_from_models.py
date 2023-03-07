@@ -54,6 +54,10 @@ def svd(args):
   assert len(lora_network_o.text_encoder_loras) == len(
       lora_network_t.text_encoder_loras), f"model version is different (SD1.x vs SD2.x) / それぞれのモデルのバージョンが違います（SD1.xベースとSD2.xベース） "
 
+  import gc
+  del text_encoder_t, unet_t
+  gc.collect()
+
   # get diffs
   diffs = {}
   text_encoder_different = False
